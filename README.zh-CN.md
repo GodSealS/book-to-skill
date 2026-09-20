@@ -19,7 +19,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/virgiliojr94/book-to-skill/releases"><img src="https://img.shields.io/github/v/release/virgiliojr94/book-to-skill?style=for-the-badge&color=blueviolet" alt="Latest release"></a>
+  <a href="https://github.com/GodSealS/book-to-skill/releases"><img src="https://img.shields.io/github/v/release/GodSealS/book-to-skill?style=for-the-badge&color=blueviolet" alt="Latest release"></a>
   <img src="https://img.shields.io/badge/Agent_Skills-Open_Standard-blueviolet?style=for-the-badge" alt="Agent Skills standard">
   <img src="https://img.shields.io/badge/PDF%20%E2%80%A2%20EPUB%20%E2%80%A2%20DOCX%20%E2%80%A2%20MD%20%E2%80%A2%20HTML%20%E2%80%A2%20RTF%20%E2%80%A2%20MOBI-supported-green?style=for-the-badge" alt="Formats supported">
   <img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" alt="MIT License">
@@ -134,10 +134,10 @@
 
 ```bash
 # 一条命令，任意宿主 —— 通过跨 Agent skills CLI：
-npx skills add virgiliojr94/book-to-skill
+npx skills add GodSealS/book-to-skill
 
 # 或手动 —— 克隆到 skills 文件夹（注册 /book-to-skill）：
-git clone https://github.com/virgiliojr94/book-to-skill.git ~/.claude/skills/book-to-skill
+git clone https://github.com/GodSealS/book-to-skill.git ~/.claude/skills/book-to-skill
 # （Copilot CLI：~/.copilot/skills/ · Amp/跨 Agent：~/.agents/skills/）
 # （Hermes Agent：${HERMES_HOME:-$HOME/.hermes}/skills/<category>/）
 # （OpenClaw：${OPENCLAW_STATE_DIR:-$HOME/.openclaw}/skills/；~/.agents/skills/ 仅限默认状态）

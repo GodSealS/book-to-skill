@@ -28,3 +28,5 @@ docs/BACKERS.md
 
 # Local evaluation work products
 .eval-work/
+graphify-out/
+.codebuddy/

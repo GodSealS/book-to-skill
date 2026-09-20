@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/virgiliojr94/book-to-skill/releases"><img src="https://img.shields.io/github/v/release/virgiliojr94/book-to-skill?style=for-the-badge&color=blueviolet" alt="Latest release"></a>
+  <a href="https://github.com/GodSealS/book-to-skill/releases"><img src="https://img.shields.io/github/v/release/GodSealS/book-to-skill?style=for-the-badge&color=blueviolet" alt="Latest release"></a>
   <img src="https://img.shields.io/badge/Agent_Skills-Open_Standard-blueviolet?style=for-the-badge" alt="Agent Skills standard">
   <img src="https://img.shields.io/badge/PDF%20%E2%80%A2%20EPUB%20%E2%80%A2%20DOCX%20%E2%80%A2%20MD%20%E2%80%A2%20HTML%20%E2%80%A2%20RTF%20%E2%80%A2%20MOBI-supported-green?style=for-the-badge" alt="Formats supported">
   <img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" alt="MIT License">
@@ -135,10 +135,10 @@ PDF-агент не просто читает — *навигирует*: ToC, b
 
 ```bash
 # One command, any host:
-npx skills add virgiliojr94/book-to-skill
+npx skills add GodSealS/book-to-skill
 
 # Or manually:
-git clone https://github.com/virgiliojr94/book-to-skill.git ~/.claude/skills/book-to-skill
+git clone https://github.com/GodSealS/book-to-skill.git ~/.claude/skills/book-to-skill
 # (Copilot: ~/.copilot/skills/ · Amp: ~/.agents/skills/)
 # (Hermes Agent: ${HERMES_HOME:-$HOME/.hermes}/skills/<category>/)
 # (OpenClaw: ${OPENCLAW_STATE_DIR:-$HOME/.openclaw}/skills/; ~/.agents/skills/ только в состоянии по умолчанию)
@@ -204,11 +204,11 @@ MIT — на converter в этом репо, **не** на книги/докум
 
 ## Star History
 
-<a href="https://www.star-history.com/?repos=virgiliojr94%2Fbook-to-skill&type=date&legend=top-left">
+<a href="https://www.star-history.com/?repos=GodSealS%2Fbook-to-skill&type=date&legend=top-left">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=virgiliojr94/book-to-skill&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=virgiliojr94/book-to-skill&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=virgiliojr94/book-to-skill&type=date&legend=top-left" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=GodSealS/book-to-skill&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=GodSealS/book-to-skill&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=GodSealS/book-to-skill&type=date&legend=top-left" />
  </picture>
 </a>
 

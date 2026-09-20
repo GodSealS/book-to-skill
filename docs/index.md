@@ -15,10 +15,10 @@ hide:
   "operatingSystem": "Linux, macOS, Windows",
   "description": "Converts books and documents (PDF, EPUB, DOCX, HTML, Markdown, RTF, MOBI/AZW) into structured, on-demand agent skills for Claude Code, GitHub Copilot CLI, Amp, Hermes Agent and OpenClaw.",
   "url": "https://booktoskill.is-a.dev/",
-  "codeRepository": "https://github.com/virgiliojr94/book-to-skill",
+  "codeRepository": "https://github.com/GodSealS/book-to-skill",
   "license": "https://opensource.org/licenses/MIT",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-  "author": { "@type": "Person", "name": "virgiliojr94", "url": "https://github.com/virgiliojr94" }
+  "author": { "@type": "Person", "name": "GodSealS", "url": "https://github.com/GodSealS" }
 }
 </script>
 
@@ -30,7 +30,7 @@ Turn any book or document into a structured, on-demand agent skill — named fra
 
 [Get started](guide.md){ .md-button .md-button--primary }
 [Skill reference](skill-reference.md){ .md-button }
-[GitHub](https://github.com/virgiliojr94/book-to-skill){ .md-button }
+[GitHub](https://github.com/GodSealS/book-to-skill){ .md-button }
 
 ---
 
@@ -73,9 +73,9 @@ Turn any book or document into a structured, on-demand agent skill — named fra
 **As an agent skill** (gives you the `/book-to-skill` command in Claude Code, Copilot CLI, Amp, Hermes Agent, or OpenClaw):
 
 ```bash
-npx skills add virgiliojr94/book-to-skill
+npx skills add GodSealS/book-to-skill
 # or manually:
-git clone https://github.com/virgiliojr94/book-to-skill.git ~/.claude/skills/book-to-skill
+git clone https://github.com/GodSealS/book-to-skill.git ~/.claude/skills/book-to-skill
 # then, in your agent session:
 /book-to-skill /path/to/book.pdf [skill-name]
 ```
@@ -84,7 +84,7 @@ git clone https://github.com/virgiliojr94/book-to-skill.git ~/.claude/skills/boo
 
 ```bash
 # not on PyPI yet — pip takes it from the repository
-pip install "book-to-skill[pdf,epub,docx] @ git+https://github.com/virgiliojr94/book-to-skill.git"
+pip install "book-to-skill[pdf,epub,docx] @ git+https://github.com/GodSealS/book-to-skill.git"
 book-to-skill /path/to/book.pdf --mode text
 ```
 

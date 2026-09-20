@@ -1076,7 +1076,7 @@ def print_intro() -> None:
     sys.stderr.write(
         "book-to-skill · turns a document into a structured agent skill\n"
         "free and MIT-licensed · maintained in personal time · "
-        "github.com/virgiliojr94/book-to-skill\n\n"
+        "github.com/GodSealS/book-to-skill\n\n"
     )
 
 

@@ -1,12 +1,12 @@
 ---
-description: "Install book-to-skill as an agent skill for Claude Code, GitHub Copilot CLI, Amp, Codex, Hermes Agent and OpenClaw, or as a standalone pip CLI. Every host path and optional extractor covered."
-seo_title: "Install book-to-skill - Claude Code, Copilot CLI, Amp, Hermes, OpenClaw, or pip"
+description: "Install book-to-skill as an agent skill for CodeBuddy, Claude Code, GitHub Copilot CLI, Amp, Codex, Hermes Agent and OpenClaw, or as a standalone pip CLI. Every host path and optional extractor covered."
+seo_title: "Install book-to-skill - CodeBuddy, Claude Code, Copilot CLI, Amp, Hermes, OpenClaw, or pip"
 ---
 
 ## 📥 Install
 
 > **Two ways to use it, do not confuse them:**
-> - **As an agent skill** (the `/book-to-skill` command in Claude Code, Copilot CLI, Amp, Codex, Hermes Agent, or OpenClaw) → **`git clone` into your skills folder** (below). This is what gives you the slash command and the full convert-a-book flow.
+> - **As an agent skill** (the `/book-to-skill` command in CodeBuddy, Claude Code, Copilot CLI, Amp, Codex, Hermes Agent, or OpenClaw) → **`git clone` into your skills folder** (below). This is what gives you the slash command and the full convert-a-book flow.
 > - **As a standalone CLI** (just the text extractor) → `pip install` it from the repository, then `book-to-skill --help`. This does **not** register the agent skill; it only installs the extraction engine. See [the CLI section](#standalone-cli-pip).
 
 The skill follows the open [Agent Skills](https://github.com/agentskills/agentskills) standard, so a single install works for any compatible host.
@@ -14,7 +14,7 @@ The skill follows the open [Agent Skills](https://github.com/agentskills/agentsk
 **One command, any host** — the [`skills` CLI](https://skills.sh) resolves the repo, detects the root `SKILL.md`, and installs the complete skill (including `scripts/extract.py` and `tools/`) into the skills folder of every host you select:
 
 ```bash
-npx skills add virgiliojr94/book-to-skill
+npx skills add GodSealS/book-to-skill
 ```
 
 Prefer a manual install? Every per-host `git clone` path below works exactly the same.
@@ -22,7 +22,7 @@ Prefer a manual install? Every per-host `git clone` path below works exactly the
 **GitHub Copilot CLI** (personal skill):
 
 ```bash
-git clone https://github.com/virgiliojr94/book-to-skill.git ~/.copilot/skills/book-to-skill
+git clone https://github.com/GodSealS/book-to-skill.git ~/.copilot/skills/book-to-skill
 # then, in a `copilot` session:
 /skills reload
 /skills info book-to-skill
@@ -31,7 +31,7 @@ git clone https://github.com/virgiliojr94/book-to-skill.git ~/.copilot/skills/bo
 Or the cross-agent path that Copilot CLI, Amp and Codex all discover:
 
 ```bash
-git clone https://github.com/virgiliojr94/book-to-skill.git ~/.agents/skills/book-to-skill
+git clone https://github.com/GodSealS/book-to-skill.git ~/.agents/skills/book-to-skill
 ```
 
 **OpenAI Codex** reads `~/.agents/skills` and follows symlinks, so the clone above is all it needs. A local checkout works too, linked in rather than copied:
@@ -43,9 +43,9 @@ ln -s /path/to/book-to-skill ~/.agents/skills/book-to-skill
 **OpenClaw**:
 
 ```bash
-git clone https://github.com/virgiliojr94/book-to-skill.git "${OPENCLAW_STATE_DIR:-$HOME/.openclaw}/skills/book-to-skill"
+git clone https://github.com/GodSealS/book-to-skill.git "${OPENCLAW_STATE_DIR:-$HOME/.openclaw}/skills/book-to-skill"
 # Shared cross-agent path; OpenClaw discovers this only with the default state:
-# git clone https://github.com/virgiliojr94/book-to-skill.git ~/.agents/skills/book-to-skill
+# git clone https://github.com/GodSealS/book-to-skill.git ~/.agents/skills/book-to-skill
 ```
 
 OpenClaw discovers skills under the active state directory's `skills/` root, `<workspace>/skills/book-to-skill`, and explicitly configured `skills.load.extraDirs` (up to 6 grouping levels). The shared `~/.agents/skills` compatibility root is discovered only when `OPENCLAW_STATE_DIR` is unset or uses the default `~/.openclaw`; a non-default state does not index that home-scoped root. Verify with `openclaw skills list` — it watches `SKILL.md` by default. Grouped layouts like `${OPENCLAW_STATE_DIR:-$HOME/.openclaw}/skills/group/subgroup/book-to-skill` also work.
@@ -59,7 +59,7 @@ openclaw skills list
 **Hermes Agent**:
 
 ```bash
-git clone https://github.com/virgiliojr94/book-to-skill.git \
+git clone https://github.com/GodSealS/book-to-skill.git \
   "${HERMES_HOME:-$HOME/.hermes}/skills/productivity/book-to-skill"
 ```
 
@@ -85,18 +85,42 @@ Hermes does not load project-local skills from `.hermes/skills/` or
 Copy this into your Claude Code session:
 
 ```
-Install book-to-skill: https://raw.githubusercontent.com/virgiliojr94/book-to-skill/master/SKILL.md
+Install book-to-skill: https://raw.githubusercontent.com/GodSealS/book-to-skill/master/SKILL.md
 ```
 
 Or manually using standard `git clone` (ensures modular engine files are fetched correctly):
 
 ```bash
-git clone https://github.com/virgiliojr94/book-to-skill.git ~/.claude/skills/book-to-skill
+git clone https://github.com/GodSealS/book-to-skill.git ~/.claude/skills/book-to-skill
 # Project-local (share with team via git):
-# git clone https://github.com/virgiliojr94/book-to-skill.git .claude/skills/book-to-skill
+# git clone https://github.com/GodSealS/book-to-skill.git .claude/skills/book-to-skill
 ```
 
-> **Generated book skills — where do they go?** By default the converter uses the established **Personal (global)** root (`~/.agents/skills/<slug>/` for most hosts). **Project-local** output (`.claude/skills/<slug>/`, `.agents/skills/<slug>/`, or `.github/skills/<slug>/`) is an explicit choice for project-specific, git-shareable skills and may require host approval to write inside the project. Set `BOOK_TO_SKILL_SCOPE=project` or `personal` to make the scope explicit for automation; the converter does not ask a mandatory scope question merely because both scopes are available.
+**CodeBuddy** (CodeBuddy IDE and CodeBuddy Code CLI):
+
+```bash
+# User-level — available in every project
+git clone https://github.com/GodSealS/book-to-skill.git ~/.codebuddy/skills/book-to-skill
+# Project-local — shareable with the team
+# git clone https://github.com/GodSealS/book-to-skill.git .codebuddy/skills/book-to-skill
+```
+
+CodeBuddy scans **only** `~/.codebuddy/skills/` (user) and `.codebuddy/skills/` (project) — it does not read the cross-agent `~/.agents/skills` root, so a shared-root install is invisible there, and no symlink is needed. Restart the session after installing; `/skills` lists what is loaded. Generated book skills default to the same CodeBuddy root so they are discoverable without a manual move.
+
+On Windows, `ln -s` needs Developer Mode or an elevated shell — a directory junction needs neither:
+
+```powershell
+New-Item -ItemType Junction -Path "$HOME\.codebuddy\skills\book-to-skill" -Target "F:\path\to\book-to-skill"
+```
+
+The shell snippets inside the skill are POSIX bash. Under PowerShell, call the extractor directly instead:
+
+```powershell
+python "$HOME\.codebuddy\skills\book-to-skill\scripts\extract.py" --check
+python "$HOME\.codebuddy\skills\book-to-skill\scripts\extract.py" .\my-book.pdf --mode text
+```
+
+> **Generated book skills — where do they go?** By default the converter uses the established **Personal (global)** root (`~/.agents/skills/<slug>/` for most hosts, `~/.codebuddy/skills/<slug>/` on CodeBuddy). **Project-local** output (`.claude/skills/<slug>/`, `.agents/skills/<slug>/`, or `.github/skills/<slug>/`) is an explicit choice for project-specific, git-shareable skills and may require host approval to write inside the project. Set `BOOK_TO_SKILL_SCOPE=project` or `personal` to make the scope explicit for automation; the converter does not ask a mandatory scope question merely because both scopes are available.
 
 Scope-selection check:
 
@@ -124,7 +148,7 @@ for that).
 repository:
 
 ```bash
-pip install "book-to-skill[pdf,epub,docx] @ git+https://github.com/virgiliojr94/book-to-skill.git"
+pip install "book-to-skill[pdf,epub,docx] @ git+https://github.com/GodSealS/book-to-skill.git"
 book-to-skill ~/path/to/book.pdf --mode text  # or: python -m book_to_skill ...
 book-to-skill --check                          # report which extractors are installed
 ```

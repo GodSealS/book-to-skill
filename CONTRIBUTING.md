@@ -18,7 +18,7 @@ generation higher-signal, or the docs clearer are all welcome.
 ## Development
 
 ```bash
-git clone https://github.com/virgiliojr94/book-to-skill.git
+git clone https://github.com/GodSealS/book-to-skill.git
 cd book-to-skill
 python3 -m venv .venv && . .venv/bin/activate
 pip install pytest ruff

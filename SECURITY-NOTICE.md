@@ -4,7 +4,7 @@
 
 The only official `book-to-skill` repository is:
 
-> **https://github.com/virgiliojr94/book-to-skill**
+> **https://github.com/GodSealS/book-to-skill**
 
 A separate repository at `Leutenegger/book-to-skill` is **not affiliated with, maintained by, or endorsed by this project**.
 
@@ -27,13 +27,13 @@ Users who executed it on a system containing affected wallet software should tre
 Use only the official repository and installation source:
 
 ```bash
-npx skills add virgiliojr94/book-to-skill
+npx skills add GodSealS/book-to-skill
 ```
 
 or:
 
 ```bash
-git clone https://github.com/virgiliojr94/book-to-skill.git
+git clone https://github.com/GodSealS/book-to-skill.git
 ```
 
 The official project does not contain the wallet-enumeration or exfiltration behavior described above.

@@ -6,11 +6,12 @@ Severity:
   WARN   -> the host ignores it, or it's a soft guideline (does not fail CI)
 
 Lenses:
-  claude   — Claude Code rules (default; back-compat)
-  copilot  — GitHub Copilot CLI rules
-  amp      — Sourcegraph Amp rules
-  hermes   — Hermes Agent rules
-  openclaw — OpenClaw rules
+  claude    — Claude Code rules (default; back-compat)
+  copilot   — GitHub Copilot CLI rules
+  amp       — Sourcegraph Amp rules
+  hermes    — Hermes Agent rules
+  openclaw  — OpenClaw rules
+  codebuddy — CodeBuddy rules
 
 The SKILL.md format itself is an open standard
 (https://github.com/agentskills/agentskills) — `name` + `description` are the
@@ -26,8 +27,9 @@ Refs:
    Amp        https://ampcode.com/manual#skills
    Hermes     https://hermes-agent.nousresearch.com/docs/user-guide/features/skills
    OpenClaw   https://docs.openclaw.ai/tools/skills
+  CodeBuddy  https://www.codebuddy.ai/docs/cli/skills
 
-Usage: python3 tools/validate_skill.py [--lens claude|copilot|amp|hermes|openclaw] [path/to/SKILL.md]
+Usage: python3 tools/validate_skill.py [--lens claude|copilot|amp|hermes|openclaw|codebuddy] [path/to/SKILL.md]
 """
 import argparse
 import re
@@ -100,6 +102,26 @@ LENSES = {
         "unknown_tool_severity": "warn",
         "enforces_allowed_tools": False,
         "description_soft_limit": 60,
+        "name_pattern": r"[a-z0-9][a-z0-9._-]*",
+        "name_charset": (
+            "lowercase letters/digits/hyphens/dots/underscores and start with a letter or digit"
+        ),
+    },
+    # CodeBuddy loads skills from <project>/.codebuddy/skills/ and
+    # ~/.codebuddy/skills/, shares Claude's tool names, and adds its own
+    # invocation/context keys. Its identifier rules are undocumented, so the
+    # permissive pattern is used to avoid false errors.
+    "codebuddy": {
+        "label": "CodeBuddy",
+        "tools": CLAUDE_CODE_TOOLS,
+        "recognized_keys": {
+            "name", "description", "allowed-tools", "license",
+            "argument-hint", "user-invocable", "disable-model-invocation",
+            "context", "agent", "model", "hooks",
+        },
+        "reserved_name_words": set(),
+        "bash_tool_names": {"Bash"},
+        "unknown_tool_severity": "warn",
         "name_pattern": r"[a-z0-9][a-z0-9._-]*",
         "name_charset": (
             "lowercase letters/digits/hyphens/dots/underscores and start with a letter or digit"
@@ -205,7 +227,10 @@ def audit(path, lens="claude"):
     if not tools:
         inline = get_scalar(fm, "allowed-tools")
         if inline:
-            tools = inline.split()
+            # Inline form is comma-separated ("Bash, Read, Write") — split on
+            # commas, not whitespace, so the trailing commas don't become part
+            # of the tool name.
+            tools = [t.strip() for t in inline.split(",") if t.strip()]
     if tools and rules.get("enforces_allowed_tools", True):
         bases = {tool_base(t) for t in tools}
         known = {b for b in bases if b in rules["tools"]}

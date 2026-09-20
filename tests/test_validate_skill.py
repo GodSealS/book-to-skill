@@ -157,3 +157,46 @@ def test_hermes_lens_rejects_unsupported_identifier_characters(tmp_path):
     )
     errors, _ = validate_skill.audit(str(p), lens="hermes")
     assert any("name:" in error for error in errors)
+
+
+def test_codebuddy_lens_accepts_standard_skill(tmp_path):
+    p = tmp_path / "SKILL.md"
+    p.write_text(_SKILL, encoding="utf-8")
+    errors, _ = validate_skill.audit(str(p), lens="codebuddy")
+    assert errors == []
+
+
+def test_codebuddy_lens_recognizes_codebuddy_metadata(tmp_path):
+    p = tmp_path / "SKILL.md"
+    p.write_text(
+        "---\n"
+        "name: my-skill\n"
+        "description: A test skill.\n"
+        "argument-hint: \"<path> [slug]\"\n"
+        "user-invocable: true\n"
+        "disable-model-invocation: false\n"
+        "allowed-tools: Bash, Read, Write, Edit, Glob, Grep\n"
+        "context: fork\n"
+        "agent: Explore\n"
+        "---\n\n```bash\npython3 scripts/example.py\n```\n",
+        encoding="utf-8",
+    )
+    errors, warns = validate_skill.audit(str(p), lens="codebuddy")
+    assert errors == []
+    assert not [warning for warning in warns if "frontmatter" in warning]
+
+
+def test_codebuddy_lens_flags_allowed_tools_without_bash(tmp_path):
+    # CodeBuddy honours allowed-tools, so a list that omits Bash while the skill
+    # runs python3 would block the extraction step.
+    p = tmp_path / "SKILL.md"
+    p.write_text(
+        "---\n"
+        "name: my-skill\n"
+        "description: A test skill.\n"
+        "allowed-tools: Read, Write\n"
+        "---\n\n```bash\npython3 scripts/extract.py\n```\n",
+        encoding="utf-8",
+    )
+    errors, _ = validate_skill.audit(str(p), lens="codebuddy")
+    assert any("allowed-tools" in error for error in errors)

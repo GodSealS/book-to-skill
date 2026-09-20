@@ -1,20 +1,27 @@
 ---
 name: book-to-skill
-description: "Converts books and documents (PDF, EPUB, DOCX, HTML, Markdown, plain text, RTF, MOBI/AZW with Calibre) into structured agent skills, extracting frameworks, mental models, principles, techniques, and anti-patterns. Use when the user wants to study a document through GitHub Copilot CLI, Amp, Claude Code, Hermes Agent, or OpenClaw, apply an author's frameworks while working, or build a reusable knowledge base from a file."
+description: "Converts books and documents (PDF, EPUB, DOCX, HTML, Markdown, plain text, RTF, MOBI/AZW with Calibre) into structured agent skills, extracting frameworks, mental models, principles, techniques, and anti-patterns. Use when the user wants to study a document through CodeBuddy, GitHub Copilot CLI, Amp, Claude Code, Hermes Agent, or OpenClaw, apply an author's frameworks while working, or build a reusable knowledge base from a file."
+argument-hint: "<path-to-document-folder-or-glob>... [skill-name-slug]"
+user-invocable: true
+allowed-tools: Bash, Read, Write, Edit, Glob, Grep
 ---
 
 <!--
 Cross-agent notes (informational; ignored by host agents):
-  - Compatible skill roots: GitHub Copilot CLI (~/.copilot/skills, ~/.agents/skills,
+  - Compatible skill roots: CodeBuddy (~/.codebuddy/skills, <project>/.codebuddy/skills),
+    GitHub Copilot CLI (~/.copilot/skills, ~/.agents/skills,
     .github/skills, .claude/skills, .agents/skills), Amp (.agents/skills,
     ~/.config/agents/skills, ~/.config/amp/skills), Claude Code (~/.claude/skills),
     Hermes Agent ($HERMES_HOME/skills, .hermes/skills, .agents/skills),
     OpenClaw (${OPENCLAW_STATE_DIR:-~/.openclaw}/skills, .agents/skills, skills/;
     ~/.agents/skills only with the default state).
-  - `allowed-tools` is intentionally omitted to stay agent-neutral: Copilot CLI uses
-    `shell`/MCP-server names, Claude uses `Bash`/`Read`/`Write`/`Glob`/`Grep`, Amp
-    adds `shell_command`. The skill needs shell (to run extract.py) and file
-    read/write — each host will prompt for those on first use.
+  - `allowed-tools` uses the Claude/CodeBuddy tool names (Bash/Read/Write/Edit/Glob/Grep).
+    Copilot CLI and Amp read the same names or treat unknown tokens as MCP-server
+    names, so the list is portable; it exists so CodeBuddy stops prompting for every
+    file write.
+  - CodeBuddy substitutes ${CODEBUDDY_SKILL_DIR} (alias ${CLAUDE_SKILL_DIR}) with the
+    absolute path of this skill's directory — prefer it over probing when running there.
+    Other hosts leave the placeholder literal, which the Step 2 probe simply skips.
   - Argument hint: <path-to-document-folder-or-glob>... [skill-name-slug]
 -->
 
@@ -24,7 +31,7 @@ Transform written knowledge into actionable agent skills by extracting structure
 
 ## Philosophy
 
-Books contain crystallized expertise: frameworks, principles, and techniques that took years to develop. This skill extracts that knowledge into a format GitHub Copilot CLI, Amp, Claude Code, Hermes Agent, OpenClaw, or another compatible agent can leverage repeatedly.
+Books contain crystallized expertise: frameworks, principles, and techniques that took years to develop. This skill extracts that knowledge into a format CodeBuddy, GitHub Copilot CLI, Amp, Claude Code, Hermes Agent, OpenClaw, or another compatible agent can leverage repeatedly.
 
 **Extract structure, not summaries.** A skill isn't a book report. It's a toolkit of:
 - Named frameworks (mental models with clear application)
@@ -69,20 +76,22 @@ Four paths available. Route based on what the user asks:
 
 This converter can run from multiple skill systems. When looking for this converter's helper script or writing the generated book skill, prefer these locations in order:
 
-1. GitHub Copilot CLI personal skills: `~/.copilot/skills/`
-2. Cross-agent personal skills (Copilot, Amp, Codex; OpenClaw with its default state): `~/.agents/skills/`
-3. Claude Code personal skills: `~/.claude/skills/`
-4. Project-local Copilot skills: `.github/skills/`
-5. Project-local Claude skills: `.claude/skills/`
-6. Project-local Amp / Copilot / OpenClaw skills: `.agents/skills/`
-7. Amp global skills: `~/.config/agents/skills/`
-8. Amp legacy global skills: `~/.config/amp/skills/`
-9. Hermes Agent personal skills: `$HERMES_HOME/skills/` (defaults to `~/.hermes/skills/`)
-10. Hermes Agent project skills: `.hermes/skills/` or `.agents/skills/`
-11. OpenClaw personal skills: `${OPENCLAW_STATE_DIR:-~/.openclaw}/skills/` (active state; `~/.agents/skills/` is shared only with the default state)
-12. OpenClaw project skills: `.agents/skills/` or `skills/`
+1. CodeBuddy personal skills: `~/.codebuddy/skills/`
+2. GitHub Copilot CLI personal skills: `~/.copilot/skills/`
+3. Cross-agent personal skills (Copilot, Amp, Codex; OpenClaw with its default state): `~/.agents/skills/`
+4. Claude Code personal skills: `~/.claude/skills/`
+5. Project-local Copilot skills: `.github/skills/`
+6. Project-local Claude skills: `.claude/skills/`
+7. Project-local Amp / Copilot / OpenClaw skills: `.agents/skills/`
+8. Amp global skills: `~/.config/agents/skills/`
+9. Amp legacy global skills: `~/.config/amp/skills/`
+10. Hermes Agent personal skills: `$HERMES_HOME/skills/` (defaults to `~/.hermes/skills/`)
+11. Hermes Agent project skills: `.hermes/skills/` or `.agents/skills/`
+12. OpenClaw personal skills: `${OPENCLAW_STATE_DIR:-~/.openclaw}/skills/` (active state; `~/.agents/skills/` is shared only with the default state)
+13. OpenClaw project skills: `.agents/skills/` or `skills/`
+14. CodeBuddy project skills: `.codebuddy/skills/`
 
-For **generated** book skills, prefer the user-level cross-agent root `~/.agents/skills/` — one physical copy serves the cross-agent hosts and OpenClaw when it uses its default state. Copilot CLI and Amp discover it natively; Claude Code needs a symlink from `~/.claude/skills/<skill_name>` (created in Step 10, see Step 5 for the rules). Pick a host-private or project-local root only when the user explicitly asks for one. `BOOK_TO_SKILL_SCOPE=project` or `personal` can make that choice explicit for automation; do not ask a mandatory scope question merely because both scopes are available.
+For **generated** book skills, prefer the user-level cross-agent root `~/.agents/skills/` — one physical copy serves the cross-agent hosts and OpenClaw when it uses its default state. Copilot CLI and Amp discover it natively; Claude Code needs a symlink from `~/.claude/skills/<skill_name>` (created in Step 10, see Step 5 for the rules). **CodeBuddy is the exception: it scans only `~/.codebuddy/skills/` and `.codebuddy/skills/`, so a skill written to `~/.agents/skills/` is invisible there — when running under CodeBuddy and no other scope is requested, write generated skills to the CodeBuddy root.** Pick a host-private or project-local root only when the user explicitly asks for one. `BOOK_TO_SKILL_SCOPE=project` or `personal` can make that choice explicit for automation; do not ask a mandatory scope question merely because both scopes are available.
 
 ---
 
@@ -137,6 +146,14 @@ Run the extraction script, passing the input paths:
 
 ```bash
 SCRIPT_PATH=""
+# CodeBuddy expands ${CODEBUDDY_SKILL_DIR} to this skill's own directory — the most
+# reliable source when the converter runs as a CodeBuddy skill. Hosts that do not
+# substitute it leave the variable empty, so this check simply falls through.
+if [ -f "${CODEBUDDY_SKILL_DIR}/scripts/extract.py" ]; then
+  SCRIPT_PATH="${CODEBUDDY_SKILL_DIR}/scripts/extract.py"
+elif [ -f "${CLAUDE_SKILL_DIR}/scripts/extract.py" ]; then
+  SCRIPT_PATH="${CLAUDE_SKILL_DIR}/scripts/extract.py"
+fi
 HERMES_HOME_RESOLVED="${HERMES_HOME:-$HOME/.hermes}"
 OPENCLAW_STATE_DIR_RESOLVED="${OPENCLAW_STATE_DIR:-$HOME/.openclaw}"
 PROJECT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || true)"
@@ -150,6 +167,7 @@ then
 fi
 
 CANDIDATES=(
+  "$HOME/.codebuddy/skills/book-to-skill/scripts/extract.py"
   "$HOME/.copilot/skills/book-to-skill/scripts/extract.py"
   "$HOME/.agents/skills/book-to-skill/scripts/extract.py"
   "$HOME/.claude/skills/book-to-skill/scripts/extract.py"
@@ -165,6 +183,7 @@ CANDIDATES=(
 )
 if [ "${HERMES_AGENT:-}" != true ]; then
   CANDIDATES+=(
+    ".codebuddy/skills/book-to-skill/scripts/extract.py"
     ".github/skills/book-to-skill/scripts/extract.py"
     ".claude/skills/book-to-skill/scripts/extract.py"
     ".agents/skills/book-to-skill/scripts/extract.py"
@@ -223,6 +242,8 @@ fi
 ```
 
 Before extraction, the script checks optional Python packages needed for the detected format. If a better extractor is missing, it prompts the user with the available fallback. Non-interactive sessions default to fallback unless install mode is explicitly `yes`.
+
+**Windows / PowerShell:** the blocks above are POSIX bash. On Windows, run the script directly instead — `"$PYTHON_BIN" "$SCRIPT_PATH" $INPUT_PATHS --mode <BOOK_TYPE> --install-missing ask` with `PYTHON_BIN=python` (there is usually no `python3` shim) — and use `Remove-Item -Recurse -Force <workdir>` where Step 10 says `rm -rf`. Directory junctions (`New-Item -ItemType Junction`) replace `ln -s` on Windows and need no elevated shell.
 
 **Tip — preflight the environment:** run `"$PYTHON_BIN" "$SCRIPT_PATH" --check` to print a per-format report of which extractors are installed and the exact command to install whatever is missing, without processing any file. Useful when a user reports a setup or quality problem.
 
@@ -368,10 +389,11 @@ Otherwise, propose two options and let the user choose:
 
 Default to author-concept format if the book has a strong methodological identity.
 
-Choose the destination skill root (`SKILLS_HOME`). First resolve **scope** from an explicit user request or `BOOK_TO_SKILL_SCOPE`, then probe **host**. A request for project-local/project output selects the project-local row; a request for personal/global output selects the personal row. If neither scope is requested, preserve the established personal default (`~/.agents/skills` for non-Hermes hosts). Do not ask a mandatory scope question solely because project-local roots exist. The selected root may still require host approval before writing.
+Choose the destination skill root (`SKILLS_HOME`). First resolve **scope** from an explicit user request or `BOOK_TO_SKILL_SCOPE`, then probe **host**. A request for project-local/project output selects the project-local row; a request for personal/global output selects the personal row. If neither scope is requested, preserve the established personal default (`~/.agents/skills` for non-Hermes hosts) — **except on CodeBuddy, which scans only its own roots, so its personal row is the default there**. Do not ask a mandatory scope question solely because project-local roots exist. The selected root may still require host approval before writing.
 
 | Host agent | Personal skill root | Project-local root |
 |---|---|---|
+| **CodeBuddy** | `~/.codebuddy/skills` | `.codebuddy/skills` |
 | **GitHub Copilot CLI** | `~/.agents/skills` (discovered natively) | `.github/skills` → `.claude/skills` → `.agents/skills` |
 | **Amp** | `~/.agents/skills` (discovered natively) | `.agents/skills` |
 | **OpenAI Codex** | `~/.agents/skills` (discovered natively; follows symlinks) | `.agents/skills` |
@@ -384,12 +406,12 @@ Hermes Agent is the one host that keeps its own personal root: it partitions per
 For OpenClaw, use the active state directory's `skills/` root: `${OPENCLAW_STATE_DIR:-~/.openclaw}/skills/`. The shared `~/.agents/skills` compatibility root is discoverable only when `OPENCLAW_STATE_DIR` is unset or the default `~/.openclaw`; with a non-default state, do not claim that OpenClaw will see a shared-root install. Verify discovery with `openclaw skills list` after generation.
 
 Selection rules:
-1. Personal install: set `SKILLS_HOME` to `~/.agents/skills` (create the directory if missing). One exception, so the default does not invent a convention in someone else's house: if `~/.agents/skills` does not exist **and** the host's private root already contains skills, use the private root instead and say why in the report.
+1. Personal install: set `SKILLS_HOME` to `~/.agents/skills` (create the directory if missing). Two exceptions, so the default does not invent a convention in someone else's house: on CodeBuddy use `~/.codebuddy/skills` (it scans no other root, so `~/.agents/skills` output would be invisible); otherwise, if `~/.agents/skills` does not exist **and** the host's private root already contains skills, use the private root instead and say why in the report.
 2. **Claude Code does not scan `~/.agents/skills`** — after generation completes, Step 10 links the skill in with `ln -sfn "$HOME/.agents/skills/<skill_name>" "$HOME/.claude/skills/<skill_name>"`.
 3. **Hermes Agent personal installs use the Hermes row above**, not the cross-agent root, and take no symlink.
 4. If the user explicitly asks for a host-private root (`~/.copilot/skills`, `~/.claude/skills`, `~/.config/agents/skills`, `~/.config/amp/skills`), honor it and skip the symlink.
 5. If the user explicitly asked for project-local output, use the project-local row for their host.
-6. If the choice requires knowing the host (project-local output, the Hermes personal root, the OpenClaw state root, or the Claude Code symlink) and you cannot identify it, ask: "Which agent are you running in — OpenClaw, Hermes Agent, GitHub Copilot CLI, Amp, Codex, or Claude Code?"
+6. If the choice requires knowing the host (project-local output, the Hermes personal root, the OpenClaw state root, or the Claude Code symlink) and you cannot identify it, ask: "Which agent are you running in — CodeBuddy, OpenClaw, Hermes Agent, GitHub Copilot CLI, Amp, Codex, or Claude Code?"
 7. For OpenClaw personal output, use `${OPENCLAW_STATE_DIR:-$HOME/.openclaw}/skills`. The shared `~/.agents/skills` root is a valid OpenClaw destination only when `OPENCLAW_STATE_DIR` is unset or equals the default `$HOME/.openclaw`; otherwise use the active state root or a project/extra directory.
 8. If the user explicitly asks for an OpenClaw-managed personal root, use the active state root and verify discovery with `openclaw skills list`.
 
@@ -713,6 +735,7 @@ Prompted for permission on every file? That is your host gating writes outside t
 working directory. Say "save it in this project" and re-run to write inside it.
 
 Reload (if your agent doesn't auto-detect new skills):
+  CodeBuddy:           restart the session (/skills lists what is loaded)
   GitHub Copilot CLI:  /skills reload
   Claude Code:         restart the session
   Amp:                 restart the session
@@ -729,6 +752,7 @@ Fill the "Discoverable by" line from `CLAUDE_STATUS` (the read-back result), nev
 - `skipped-realdir` → "Copilot CLI, Amp, Codex (natively); **NOT** Claude Code — migrate the real directory at ~/.claude/skills/<skill_name> first"
 - `copy` or `absent` → "Copilot CLI, Amp, Codex (natively); **NOT** Claude Code — the host could not create the symlink (a plain copy drifts on the next Update/Fold-in). Enable Developer Mode / create the link manually, or run the skill from ~/.agents/skills"
 - Hermes Agent personal root → "Hermes Agent (from `$HERMES_HOME/skills/<category>`)"; no symlink claim, and no cross-agent claim, because the other hosts do not scan the Hermes root
+- `~/.codebuddy/skills` → "CodeBuddy (personal)"; `.codebuddy/skills` → "CodeBuddy (this project)"; no symlink claim — CodeBuddy reads its own roots directly, and no other host scans them
 - other host-private or project-local root → name only the host(s) that scan that root; no symlink claim
 
 The "Somewhere else?" relocation line must be correct for the path actually taken, so it never breaks the symlink the run just created. **`mv` always targets the final skill directory, `<dest_root>/<skill_name>`, never `<dest_root>` itself.** `mv ~/.agents/skills/mybook ~/.copilot/skills && ln -sfn ~/.copilot/skills ~/.claude/skills/mybook` reads as valid and is not: the skill lands at `~/.copilot/skills/mybook` while the link points one level up at the root, so Claude Code resolves to a directory with no `SKILL.md`, which is the exact breakage this line exists to avoid. Substitute the destination the user actually named, so the printed command carries real paths and there is nothing left to interpret:
@@ -758,7 +782,7 @@ If the user declines, stop here. Requirements: the `gh` CLI, authenticated (chec
 
 If accepted:
 
-1. Add a repo `README.md` inside `$SKILLS_HOME/<skill_name>/` (never overwrite an existing file) — the skill title, a one-paragraph description ("Agent skill generated from *<Title>* by <Author> with [book-to-skill](https://github.com/virgiliojr94/book-to-skill)"), the install command from step 3 below, the file inventory, and a note that the content is synthesized summaries, not the book text.
+1. Add a repo `README.md` inside `$SKILLS_HOME/<skill_name>/` (never overwrite an existing file) — the skill title, a one-paragraph description ("Agent skill generated from *<Title>* by <Author> with [book-to-skill](https://github.com/GodSealS/book-to-skill)"), the install command from step 3 below, the file inventory, and a note that the content is synthesized summaries, not the book text.
 2. Initialize the skill folder as a git repository and create the remote (default repo name `<skill_name>`; let the user override — some prefer a `<skill_name>-skill` suffix). **Nested-repo guard:** first check whether the skill folder already sits inside a git repository (`git -C "$SKILLS_HOME/<skill_name>" rev-parse --show-toplevel` — always the case for project-local roots like `.claude/skills/`). If it does, do NOT `git init` in place: the outer repository would record the folder as an embedded repo (gitlink, mode 160000) without `.gitmodules`, and fresh clones of the outer project would silently omit the skill. Instead, copy the skill folder to a scratch directory, run the commands below from the copy, and tell the user the published repo — not the project-local folder — is the remote's working copy.
 
 ```bash
